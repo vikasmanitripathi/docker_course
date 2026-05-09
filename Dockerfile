@@ -1,11 +1,19 @@
-FROM nginx:latest
+FROM node:13-alpine
 
-# Copy the index.html file to the nginx html directory
-COPY index.html /usr/share/nginx/html/
+ENV MONGO_DB_USERNAME=admin \
+    MONGO_DB_PWD=password
 
-# Expose port 80
-EXPOSE 80
+RUN mkdir -p /home/app
 
-# Start nginx server
-CMD ["nginx", "-g", "daemon off;"]
+COPY ./app /home/app
+
+EXPOSE 3000
+# set default dir so that next commands executes in /home/app dir
+WORKDIR /home/app
+
+# will execute npm install in /home/app because of WORKDIR
+RUN npm install
+
+# no need for /home/app/server.js because of WORKDIR
+CMD ["node", "server.js"]
 

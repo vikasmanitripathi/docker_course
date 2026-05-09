@@ -15,4 +15,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag nginx:$(date +%s)
+      run: docker build . --file Dockerfile --tag vikastripathie/demo-app:latest
+
+    - name: Push Docker Image
+      if: github.event_name == 'push'
+      uses: mr-smithers-excellent/docker-build-push@v4
+      with:
+        image: vikastripathie/demo-app
+        registry: docker.io
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Run Docker Container
+      run: docker run -p 8080:80 vikastripathie/demo-app:latest
